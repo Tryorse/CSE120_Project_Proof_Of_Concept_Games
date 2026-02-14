@@ -1,0 +1,18 @@
+Physics based game where you need to keep a balancing disk from falling
+	- you aim and throw objects using physics by setting weights which will affect drag and balancing of the disk
+	- the shape chosen will be a shape
+	- you set the size of the object
+	- keep going as many times as you can
+	- getting rid of objects by knocking them off the platform will not end the game but the higher number of items, the higher the score
+Physics based game where your goal is to make the spring drop down with a heavy weight and stop right at the ground with miniscule recoil
+	- either the spring constant, the distance to the ground, or the weight’s mass will be randomized. 2 of them can be but no more than 2
+	- values randomized will not be changeable by the player
+	- the player wins if the spring does not really jump back by a non-miniscule amount after dropping
+	- Hooke's law will be visualized and the player will be helpful for the player filling in values
+	- if a player does not succeed, let them retry with a point decrease. But after a few tries, allow them to skip for 1/3 of their points to be dropped instead of the full amount
+Game where car is constantly moving down a path and the player needs to input values for x and y as the slope to set the car down a path to avoid crashing
+	- the game will give the player some time to come up with values and visualize them when the car travels along
+	- the player will be given the chance to look at what the line their values drew looked like and learn how the different values they gave form how steep a slope is
+		- this will happen regardless of whether the player gave a successful slope or not
+	- the game goes on forever until the player crashes
+	- the closer the player gets a slope to the center of the road, the more points they will get
