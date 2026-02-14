@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Slope Car Game</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background: #222;
+            color: white;
+        }
+        canvas {
+            background: #333;
+            border: 2px solid white;
+            margin-top: 10px;
+        }
+        input {
+            width: 60px;
+        }
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🚗 Slope Car Game</h1>
+<p>Enter X and Y to control the slope (slope = y / x)</p>
+
+X: <input type="number" id="xInput" value="1">
+Y: <input type="number" id="yInput" value="1">
+<button onclick="startRound()">Submit</button>
+
+<p id="message"></p>
+<p>Score: <span id="score">0</span></p>
+
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+let score = 0;
+let carY, carX;
+let roadCenterSlope;
+let playerSlope = null;
+let animation = null;
+let countdownInterval = null;
+let roadHalfWidth = 50;
+let countdown;
+
+function resetCarPosition() {
+    carY = 350;
+    carX = 300;
+}
+
+function newLevel() {
+    resetCarPosition();
+    roadCenterSlope = (Math.random() - 0.5) * 1.5;
+    playerSlope = null;
+    countdown = 3;
+    document.getElementById("message").innerText = "Enter slope values!";
+    drawScene();
+}
+
+function drawScene() {
+    ctx.clearRect(0, 0, 600, 400);
+
+    // Draw road center
+    ctx.strokeStyle = "yellow";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(300, 400);
+    ctx.lineTo(300 - roadCenterSlope * 350, 50);
+    ctx.stroke();
+
+    // Left edge
+    ctx.strokeStyle = "white";
+    ctx.beginPath();
+    ctx.moveTo(300 - roadHalfWidth, 400);
+    ctx.lineTo((300 - roadHalfWidth) - roadCenterSlope * 350, 50);
+    ctx.stroke();
+
+    // Right edge
+    ctx.beginPath();
+    ctx.moveTo(300 + roadHalfWidth, 400);
+    ctx.lineTo((300 + roadHalfWidth) - roadCenterSlope * 350, 50);
+    ctx.stroke();
+
+    // Player slope
+    if (playerSlope !== null) {
+        ctx.strokeStyle = "cyan";
+        ctx.beginPath();
+        ctx.moveTo(300, 400);
+        ctx.lineTo(300 - playerSlope * 350, 50);
+        ctx.stroke();
+    }
+
+    // Car
+    ctx.fillStyle = "red";
+    ctx.fillRect(carX - 10, carY - 10, 20, 20);
+}
+
+function startRound() {
+
+    // STOP any existing movement
+    if (animation) clearInterval(animation);
+    if (countdownInterval) clearInterval(countdownInterval);
+
+    resetCarPosition();
+    drawScene();
+
+    let x = parseFloat(document.getElementById("xInput").value);
+    let y = parseFloat(document.getElementById("yInput").value);
+
+    if (x === 0) {
+        alert("X cannot be zero!");
+        return;
+    }
+
+    playerSlope = y / x;
+    countdown = 3;
+
+    countdownInterval = setInterval(() => {
+        document.getElementById("message").innerText =
+            "Car moves in " + countdown + "...";
+        countdown--;
+
+        if (countdown < 0) {
+            clearInterval(countdownInterval);
+            moveCar();
+        }
+    }, 1000);
+}
+
+function moveCar() {
+    animation = setInterval(() => {
+
+        carY -= 2;
+        carX -= playerSlope * 2;
+
+        drawScene();
+
+        let deltaY = 400 - carY;
+        let centerX = 300 - roadCenterSlope * deltaY;
+
+        // Crash check
+        if (Math.abs(carX - centerX) > roadHalfWidth) {
+            clearInterval(animation);
+            gameOver();
+        }
+
+        // Success
+        if (carY <= 50) {
+            clearInterval(animation);
+            evaluateRound();
+        }
+
+    }, 20);
+}
+
+function evaluateRound() {
+    let distance = Math.abs(playerSlope - roadCenterSlope);
+    let points = Math.max(0, 100 - Math.floor(distance * 200));
+    score += points;
+
+    document.getElementById("score").innerText = score;
+    document.getElementById("message").innerText =
+        "You earned " + points + " points!";
+
+    setTimeout(newLevel, 2000);
+}
+
+function gameOver() {
+    document.getElementById("message").innerText =
+        "💥 Crash! Final Score: " + score;
+}
+
+newLevel();
+</script>
+
+</body>
+</html>
